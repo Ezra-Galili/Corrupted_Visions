@@ -27,3 +27,15 @@ def apply_delay(signal, delay_samples, feedback):
 
     return signal
 
+def apply_echo(signal, delay_samples, decay, num_echoes):
+
+    output = signal.copy()
+
+    for echo_num in range(1, num_echoes + 1):
+
+        offset = echo_num * delay_samples
+        amplitude = decay ** echo_num
+
+        output[offset:] += signal[:-offset] * amplitude
+
+    return output
