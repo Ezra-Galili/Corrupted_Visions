@@ -1,0 +1,13 @@
+numpy
+pillow
+opencv-python
+imageio
+imageio-ffmpeg
+moviepy
+scipy
+numba
+librosa
+soundfile
+flask
+waitress
+pybind11
