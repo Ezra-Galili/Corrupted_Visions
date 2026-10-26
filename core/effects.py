@@ -20,6 +20,15 @@ class Distortion(Effect):
 
     def process(self, signal):
         return apply_distortion(signal, self.gain, self.blend)
+
+class Echo(Effect):
+    def __init__(self, delay_samples, decay, num_echoes):
+        self.delay_samples = delay_samples
+        self.decay = decay
+        self.num_echoes = num_echoes
+
+    def process(self, signal):
+        return apply_echo(signal, self.delay_samples, self.decay, self.num_echoes)
     
 def glitch_image(img: Image.Image, params: dict) -> Image.Image:
 
@@ -39,6 +48,7 @@ def glitch_image(img: Image.Image, params: dict) -> Image.Image:
 
 def apply_delay(signal, delay_samples, feedback):
 
+    signal = signal.copy() # having the signal copied in the effect as such give it it's own private copy of the data
 
     for i in range(delay_samples, len(signal)):
 
