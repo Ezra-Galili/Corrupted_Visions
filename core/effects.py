@@ -15,6 +15,7 @@ class Delay(Effect):
         dry = signal
         wet = apply_delay(signal, self.delay_samples, self.feedback)
         return dry * (1 - self.mix) + wet * self.mix
+
 class Distortion(Effect):
     def __init__(self, gain, blend, mix = 1.0):
         self.gain = gain
@@ -22,7 +23,9 @@ class Distortion(Effect):
         self.mix = mix
 
     def process(self, signal):
-        return apply_distortion(signal, self.gain, self.blend)
+        dry = signal
+        wet = apply_distortion(signal, self.gain, self.blend)
+        return dry * (1 - self.mix) + wet * self.mix
 
 class Echo(Effect):
     def __init__(self, delay_samples, decay, num_echoes, mix = 1.0):
@@ -60,7 +63,7 @@ def apply_echo(signal, delay_samples, decay, num_echoes):
     return signal
 
 def apply_distortion(signal, gain, blend):
-    driven = signal * gain
+    driven = signal*gain
     hard = np.clip(driven, -1.0 , 1.0)
     soft = np.tanh(driven)
-    return hard * (1 -blend) + soft * blend
+    return hard * (1 - blend) + soft * blend
