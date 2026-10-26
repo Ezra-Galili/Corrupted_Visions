@@ -1,6 +1,26 @@
 import numpy as np
 from PIL import Image
 
+class Effect:
+    def process(self, signal):
+        raise NotImplementedError
+    
+class Delay(Effect):
+    def __init__(self, delay_samples, feedback):
+        self.delay_samples = delay_samples
+        self.feedback = feedback
+
+    def process(self, signal):
+        return apply_delay(signal, self.delay_samples, self.feedback)
+
+class Distortion(Effect):
+    def __init__(self, gain, blend):
+        self.gain = gain
+        self.blend = blend
+
+    def process(self, signal):
+        return apply_distortion(signal, self.gain, self.blend)
+    
 def glitch_image(img: Image.Image, params: dict) -> Image.Image:
 
     arr = np.array(img, dtype=np.float32)
@@ -8,7 +28,6 @@ def glitch_image(img: Image.Image, params: dict) -> Image.Image:
     h, w, c = arr.shape # gets the height, width, and color channels of the image
     pixel_count = h * w * c # total number of pixels in the image
     signal = arr.flatten() /127.5 - 1.0 # normalizes all pixel values from -1 to 1
-
     signal = apply_delay(signal, delay_samples = params["delay_samples"], feedback = params["feedback"]) # applies delay effect to the signal
 
     signal = signal[:pixel_count] # ensures modulated data can never exceed image input data
@@ -39,3 +58,9 @@ def apply_echo(signal, delay_samples, decay, num_echoes):
         output[offset:] += signal[:-offset] * amplitude
 
     return output
+
+def apply_distortion(signal, gain, blend):
+    driven = signal * gain
+    hard = np.clip(driven, -1.0 , 1.0)
+    soft = np.tanh(driven)
+    return hard * (1 -blend) + soft * blend
