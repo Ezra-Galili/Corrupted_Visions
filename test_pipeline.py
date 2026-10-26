@@ -5,7 +5,9 @@ from core.pipeline import glitch_image
 
 img = Image.open("/home/ezra/Programming/Corrupted_Visions/test images/chrysler.jpeg")
 
-chain = [Delay(300, 0.5, 0.1), Echo(500000, 0.75, 3, 0.1)]
+
+#chain = [Delay(300, 0.5, 1), Echo(500000, 0.75, 3, 1)]
+chain = [Echo(500000, 0.75, 3, 1), Delay(300, 0.5, 1)]
 
 image, ok, message = glitch_image(img, chain, pure)
 
