@@ -1,17 +1,21 @@
 from PIL import Image
-from core.effects import glitch_image, Delay, Echo, Distortion
+from core import pure, corrupted
+from core.effects import Delay, Echo, Distortion
+from core.pipeline import glitch_image
 
 img = Image.open("/home/ezra/Programming/Corrupted_Visions/test images/chrysler2.jpeg")
 
+chain = [Delay(300, 0.5), Echo(5400, 0.5, 5)]
 
-input_image = Image.open("/home/ezra/Programming/Corrupted_Visions/test images/chrysler2.jpeg")
+image, ok, message = glitch_image(img, chain, pure)
 
+if ok:
+    image.save("out_pure.png")
 
-chain = [Delay(9000, 0.75), Echo(90000, 0.3, 100)]
+image, ok, message = glitch_image(img, chain, corrupted)
 
-for pedal in chain:
-    signal = pedal.process(signal)
-    
-echoed_image = glitch_image(input_image, chain)
-echoed_image.save("test_output.jpg")
+if ok:
+    image.save("out_corrupted.png")
+else:
+    print("corrupted mode broke:", message)
 
