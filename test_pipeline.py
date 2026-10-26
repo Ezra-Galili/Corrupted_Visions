@@ -3,9 +3,9 @@ from core import pure, corrupted
 from core.effects import Delay, Echo, Distortion
 from core.pipeline import glitch_image
 
-img = Image.open("/home/ezra/Programming/Corrupted_Visions/test images/chrysler2.jpeg")
+img = Image.open("/home/ezra/Programming/Corrupted_Visions/test images/chrysler.jpeg")
 
-chain = [Delay(300, 0.5), Echo(5400, 0.5, 5)]
+chain = [Delay(300, 0.5, 0.1), Echo(500000, 0.75, 3, 0.1)]
 
 image, ok, message = glitch_image(img, chain, pure)
 

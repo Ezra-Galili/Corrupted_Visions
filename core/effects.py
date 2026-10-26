@@ -6,30 +6,35 @@ class Effect:
         raise NotImplementedError
     
 class Delay(Effect):
-    def __init__(self, delay_samples, feedback):
+    def __init__(self, delay_samples, feedback, mix = 1.0):
         self.delay_samples = delay_samples
         self.feedback = feedback
+        self.mix = mix
 
     def process(self, signal):
-        return apply_delay(signal, self.delay_samples, self.feedback)
-
+        dry = signal
+        wet = apply_delay(signal, self.delay_samples, self.feedback)
+        return dry * (1 - self.mix) + wet * self.mix
 class Distortion(Effect):
-    def __init__(self, gain, blend):
+    def __init__(self, gain, blend, mix = 1.0):
         self.gain = gain
         self.blend = blend
+        self.mix = mix
 
     def process(self, signal):
         return apply_distortion(signal, self.gain, self.blend)
 
 class Echo(Effect):
-    def __init__(self, delay_samples, decay, num_echoes):
+    def __init__(self, delay_samples, decay, num_echoes, mix = 1.0):
         self.delay_samples = delay_samples
         self.decay = decay
         self.num_echoes = num_echoes
+        self.mix = mix
 
     def process(self, signal):
-        return apply_echo(signal, self.delay_samples, self.decay, self.num_echoes)
-    
+        dry = signal
+        wet = apply_echo(signal, self.delay_samples, self.decay, self.num_echoes)
+        return dry * (1 - self.mix) + wet * self.mix    
 
 def apply_delay(signal, delay_samples, feedback):
 
