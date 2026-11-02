@@ -48,19 +48,25 @@ def apply_delay(signal, delay_samples, feedback):
 
 def apply_echo(signal, delay_samples, decay, num_echoes):
 
-    signal = signal.copy()
+    if delay_samples <= 0:
+        return signal.copy()
+    
+    output = signal.copy()
 
     for echo_num in range(1, num_echoes + 1):
 
         offset = echo_num * delay_samples
+
+        if offset >= len(signal):
+            break
+
         amplitude = decay ** echo_num
+        output[offset:] += signal[:-offset] * amplitude
 
-        signal[offset:] += signal[:-offset] * amplitude
-
-    return signal
+    return output
 
 def apply_distortion(signal, gain, blend):
     driven = signal * gain
     hard = np.clip(driven, -1.0 , 1.0)
     soft = np.tanh(driven)
-    return hard * (1 -blend) + soft * blend
+    return hard * (1 - blend) + soft * blend
