@@ -1,0 +1,43 @@
+import time
+from PIL import Image
+from core import pure
+from core.effects import Delay, Echo, Distortion
+from core.pipeline import preview
+
+img = Image.open("test images/chrysler2.jpeg")
+
+chain = [Delay(300, 0.5), Echo(3000, 0.3, 10), Distortion(3, 0.5)]
+
+state, signal = pure.enter(img)
+
+
+for pedal in chain:
+    pedal.process(signal) # numba compiles before timing begins
+
+start = time.perf_counter()
+state, signal = pure.enter(img)
+
+print("enter:", time.perf_counter() - start)
+
+for pedal in chain:
+    
+    start = time.perf_counter()
+    signal = pedal.process(signal)
+
+    print(type(pedal).__name__, time.perf_counter() - start)
+
+start = time.perf_counter()
+
+result = pure.leave(state, signal)
+
+print("leave:", time.perf_counter() - start)
+
+print("--- preview ---")
+
+preview(img, chain, pure)
+
+start = time.perf_counter()
+
+result = preview(img, chain, pure)
+
+print("preview total: ", time.perf_counter() - start)

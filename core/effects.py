@@ -1,5 +1,6 @@
 import numpy as np
 from PIL import Image
+from numba import njit
 
 class Effect:
     def process(self, signal):
@@ -39,6 +40,7 @@ class Echo(Effect):
         wet = apply_echo(signal, self.delay_samples, self.decay, self.num_echoes)
         return dry * (1 - self.mix) + wet * self.mix    
 
+@njit
 def apply_delay(signal, delay_samples, feedback):
 
     signal = signal.copy() # having the signal copied in the effect as such give it it's own private copy of the data
