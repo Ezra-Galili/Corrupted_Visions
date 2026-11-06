@@ -2,9 +2,16 @@ import numpy as np
 from PIL import Image
 from numba import njit
 
+def scale_samples(n, factor):
+        pixels, remainder = divmod(n,3)
+        return round(pixels * factor) * 3 + remainder
 class Effect:
     def process(self, signal):
         raise NotImplementedError
+
+    def scaled(self, factor):
+        return self
+
     
 class Delay(Effect):
     def __init__(self, delay_samples, feedback, mix = 1.0):
@@ -16,6 +23,9 @@ class Delay(Effect):
         dry = signal
         wet = apply_delay(signal, self.delay_samples, self.feedback)
         return dry * (1 - self.mix) + wet * self.mix
+
+    def scaled(self, factor):
+        return Delay(scale_samples(self.delay_samples, factor), self.feedback, self.mix)
 
 class Distortion(Effect):
     def __init__(self, gain, blend, mix = 1.0):
@@ -39,6 +49,9 @@ class Echo(Effect):
         dry = signal
         wet = apply_echo(signal, self.delay_samples, self.decay, self.num_echoes)
         return dry * (1 - self.mix) + wet * self.mix    
+
+    def scaled(self, factor):
+        return Echo(scale_samples(self.delay_samples, factor), self.decay, self.num_echoes, self.mix)
 
 @njit
 def apply_delay(signal, delay_samples, feedback):

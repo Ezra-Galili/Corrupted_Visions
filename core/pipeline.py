@@ -9,5 +9,8 @@ def preview(img, chain, mode, max_width = 400):
     small = img.copy()
     small.thumbnail((max_width, max_width))
 
-    return glitch_image(small, chain, mode)
+    factor = small.width / img.width
+    scaled_chain = [pedal.scaled(factor) for pedal in chain]
+
+    return glitch_image(small, scaled_chain, mode)
 
