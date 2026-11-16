@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<htlm>
+<head>
+
+    <meta charset = "utf-8"
+    <meta name = "viewport" content = "width=device-width, initial-scale=1">
+    <title> Corrupted Visions </title>
+
+</head>
+<body>
+
+    <img id="preview" src="/preview" alt="glitch preview">
+    <label> Delay <input id = "delay" type = "range" min = "0" max = "20000" value = "300"> </label>
+    <span id = "delayValue"> 300 </span>
+
+    <script>
+
+        const slider = document.getElementById("delay");
+        const label = document.getElementById("delayValue");
+        const preview = document.getElementById("preview");
+
+        let busy = false;
+        let latest = slider.value;
+        let lastSent = null;
+
+        function send() {
+
+            if (busy || latest == lastSent) return;
+            busy = true;
+            lastSent = latest;
+            const loader = new Image();
+            
+            loader.onload = loader.onerror = () => {
+
+                if (loader.naturalWidth) preview.src = loader.src;
+                busy = false;
+                send();
+
+            };
+
+            loader.src = "/preview?delay=" + lastSent;
+
+        }
+
+        slider.addEventListener("input", () => {
+            
+            latest = slider.value;
+            label.textContent = latest;
+            send();
+
+        });
+
+
+    </script>
+
+</body>
+
+</htlm>
